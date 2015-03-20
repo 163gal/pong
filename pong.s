@@ -7,9 +7,7 @@
 _start:
  mov $0x00, %ax
  mov %ax, %ds
- mov $0x00, %ah
- mov $0x10, %al
- int $0x10
+ call clear
  mov xaxis, %cx # X axis
  mov yaxis, %dx # Y axis
  call draw_ball
@@ -46,30 +44,10 @@ draw_ball:
   jmp dball
 
 clear:
- mov $0, %cx
- mov $0, %dx
- mov $640, %bx
- push %bx
- mov $350, %bx
- dblack:
-  push %bx
-  mov $0x0C, %ah
-  mov $0x00, %al
-  mov $0x00, %bh
-  int $0x10
-  pop %bx
-  cmp %cx, %bx
-  je nl_black
-  add $1, %cx
-  jmp dblack
- nl_black:
-  pop %ax
-  cmp %dx, %ax
-  je done
-  push %ax
-  add $1, %dx
-  mov $0, %cx
-  jmp dblack
+ mov $0x00, %ah
+ mov $0x10, %al
+ int $0x10
+ ret
 
 done:
  ret
