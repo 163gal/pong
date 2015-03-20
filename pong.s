@@ -13,7 +13,7 @@ _start:
  mov xaxis, %cx # X axis
  mov yaxis, %dx # Y axis
  call draw_ball
- #call clear
+ call clear
  mov $0, %cx
  mov $0, %dx
  call draw_ball
@@ -38,9 +38,9 @@ draw_ball:
   jmp dball
  nl_ball:
   pop %ax
-  push %ax
   cmp %dx, %ax
   je done
+  push %ax
   add $1, %dx
   sub $5, %cx
   jmp dball
@@ -64,9 +64,9 @@ clear:
   jmp dblack
  nl_black:
   pop %ax
-  push %ax
   cmp %dx, %ax
   je done
+  push %ax
   add $1, %dx
   mov $0, %cx
   jmp dblack
