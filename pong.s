@@ -2,14 +2,16 @@
 .text
 .org 0x00
 .global _start
+
+
 _start:
  mov $0x00, %ax
  mov %ax, %ds
  mov $0x00, %ah
  mov $0x10, %al
  int $0x10
- mov $320, %cx
- mov $175, %dx
+ mov $xaxis, %cx # X axis
+ mov $yaxis, %dx # Y axis
  call draw_ball
  #call clear
  mov $0, %cx
@@ -71,6 +73,9 @@ clear:
 
 done:
  ret
+
+xaxis: .int 320
+yaxis: .int 175
 
 .org 510
 .word 0xAA55
