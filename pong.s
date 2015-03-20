@@ -10,8 +10,8 @@ _start:
  mov $0x00, %ah
  mov $0x10, %al
  int $0x10
- mov $xaxis, %cx # X axis
- mov $yaxis, %dx # Y axis
+ mov xaxis, %cx # X axis
+ mov yaxis, %dx # Y axis
  call draw_ball
  #call clear
  mov $0, %cx
