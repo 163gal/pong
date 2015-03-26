@@ -20,6 +20,8 @@ _start:
  movb %al, height
  call draw_rect
 
+ call flip_screen
+
  jmp .
 
 draw_rect:
@@ -29,7 +31,7 @@ draw_rect:
  mul %bx
  mov %ax, %di
  addw xaxis, %di # Upperleft point - Start point
- mov $0xA000, %ax # Video memory
+ movw buffer_addr, %ax # Video buffer
  mov %ax, %es
 
  mov $0x00, %bx # Current X coord
@@ -66,6 +68,21 @@ clear:
  mov $200, %al
  movb %al, height
  call draw_rect
+ ret
+
+flip_screen:
+ mov $0x0000, %di
+ fliploop:
+  movw buffer_addr, %ax # Buffer memory
+  mov %ax, %es
+  mov %es:(%di), %bx
+  movw $0xA000, %ax # Video memory
+  mov %ax, %es
+  mov %bx, %es:(%di)
+  add $0x01, %di
+  cmp $0xFA00, %di
+  je done
+  jmp fliploop
 
 done:
  ret
@@ -75,6 +92,7 @@ yaxis: .byte 100
 width: .word 5
 height: .byte 5
 color: .byte 0
+buffer_addr: .word 0x1000
 
 .org 510
 .word 0xAA55
