@@ -33,13 +33,13 @@ _start:
  movw %cx, timeh
  movw %dx, timel
  
- cmp %dx, timel
- je scont
+ wcomp:
+   mov $0x00, %ah
+   int $0x1A
+   cmp %dx, timel
+   je wcomp
  
- scont:
-   movw %dx, timel
-   ret
- 
+ call clear
  
  movw $100, xaxis
  movw $100, yaxis
@@ -50,7 +50,6 @@ _start:
  mov $8, %al
  movb %al, height
  call draw_rect
-
  call flip_screen
 
  jmp .
