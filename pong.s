@@ -11,14 +11,6 @@ _start:
  mov $0x00, %ah
  mov $0x13, %al # 320x200 256 colors (Colorful! :D)
  int $0x10 # Set video mode
- 
- mov $0x01, %al
- movb %al, color
- mov $10, %ax
- movw %ax, width
- mov $8, %al
- movb %al, height
- call draw_rect
 
  call flip_screen
  
@@ -31,23 +23,17 @@ _start:
  int $0x1A
  movw %cx, timeh
  movw %dx, timel
- 
- 
 
- 
- 
- 
- 
- loop:
-   
-   addw $10, xaxis
- addw $10, yaxis
+loop:
+ call clear
+ addw $10, xaxis
+ addb $10, yaxis
  mov $0x01, %al
- movb %al, color
+ mov %al, color
  mov $10, %ax
- movw %ax, width
+ mov %ax, width
  mov $8, %al
- movb %al, height
+ mov %al, height
  call draw_rect
  call flip_screen
  
@@ -111,15 +97,35 @@ draw_rect:
   jmp drect
 
 clear:
+ push xaxis # Saves every variable in the stack
+ mov yaxis, %al
+ push %ax
+ mov color, %al
+ push %ax
+ push width
+ mov height, %al
+ push %ax
+
  mov $0x00, %ax
  movw %ax, xaxis
  movb %al, yaxis
+ mov $0x00, %al
  movb %al, color
  mov $320, %ax
  movw %ax, width
  mov $200, %al
  movb %al, height
  call draw_rect
+
+ pop %ax # Restore every variable
+ mov %al, height
+ pop width
+ pop %ax
+ mov %al, color
+ pop %ax
+ mov %al, yaxis
+ pop xaxis
+
  ret
 
 flip_screen:
