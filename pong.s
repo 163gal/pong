@@ -12,7 +12,6 @@ _start:
  mov $0x13, %al # 320x200 256 colors (Colorful! :D)
  int $0x10 # Set video mode
  
- 
  mov $0x01, %al
  movb %al, color
  mov $10, %ax
@@ -33,16 +32,16 @@ _start:
  movw %cx, timeh
  movw %dx, timel
  
- wcomp:
-   mov $0x00, %ah
-   int $0x1A
-   cmp %dx, timel
-   je wcomp
  
- call clear
+
  
- movw $100, xaxis
- movw $100, yaxis
+ 
+ 
+ 
+ loop:
+   
+   addw $10, xaxis
+ addw $10, yaxis
  mov $0x01, %al
  movb %al, color
  mov $10, %ax
@@ -51,6 +50,29 @@ _start:
  movb %al, height
  call draw_rect
  call flip_screen
+ 
+ wpar:
+	 wcomp:
+	   mov $0x00, %ah
+	   int $0x1A
+	   cmp %dx, timel
+	   je wcomp
+	 movw %dx, timel
+	 mov $3, %bl
+	 cmp %bl, timel
+	 jne wpar
+	 mov $0x01, %ah
+ mov $0x00, %cx
+ mov $0x00, %dx
+ int $0x1A
+ 
+ mov $0x00, %ah
+ int $0x1A
+ movw %cx, timeh
+ movw %dx, timel
+  jmp loop
+ 
+ 
 
  jmp .
 
@@ -125,6 +147,7 @@ color: .byte 0
 buffer_addr: .word 0x1000
 timel: .word 0
 timeh: .word 0
+tm: .int 0
 
 .org 510
 .word 0xAA55
