@@ -13,7 +13,15 @@ _start:
  int $0x10 # Set video mode
 
  call flip_screen
+
+ mov $0x36, %al
+ out %al, $0x40 # Tell the PIT to set channel 0 (System timer)
  
+ mov $39772, %ax # 30Hz (1193182/30)
+ out %al, $0x40 # Send low byte
+ mov %ah, %al # It doesn't work sending %ah?
+ out %al, $0x40 #  Send high byte
+
  mov $0x01, %ah
  mov $0x00, %cx
  mov $0x00, %dx
@@ -26,8 +34,8 @@ _start:
 
 loop:
  call clear
- addw $10, xaxis
- addb $10, yaxis
+ addw $1, xaxis
+ addb $1, yaxis
  mov $0x01, %al
  mov %al, color
  mov $10, %ax
