@@ -117,7 +117,6 @@ clear:
  mov $0x00, %ax
  movw %ax, xaxis
  movb %al, yaxis
- mov $0x00, %al
  movb %al, color
  mov $320, %ax
  movw %ax, width
