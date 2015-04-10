@@ -32,10 +32,13 @@ _start:
  movw %cx, timeh
  movw %dx, timel
 
+ fild xaxis # Load X to %st0
+ fild yaxis # Load Y to %st1
+ call move_ball
+
 loop:
  call clear
- addw $1, xaxis
- addb $1, yaxis
+ call move_ball
  mov $0x01, %al
  mov %al, color
  mov $10, %ax
@@ -69,6 +72,26 @@ loop:
  
 
  jmp .
+
+move_ball:
+ fild angle # %st2
+ fldpi # %st3=PI
+ fmulp # %st2*=%st3, delete %st3
+ fild 180 # %st3
+ fdivp # %st2/=%st3, delete %st3
+ fst fangle # Store float %st2
+ fsin # %st2=sin
+ fmul speed # %st2*=speed
+ faddp # %st1 += %st2, delete %st2
+ fst fy # Store float %st1
+ fistp yaxis # Store int %st1, delete %st1
+ fld fangle # Load angle %st1
+ fcos # %st1=cos
+ fmul speed # %st1*=speed
+ faddp # %st0 += %st1, delete %st1
+ fist xaxis # Store int %st0
+ fld fy # Load Y in %st1
+ ret
 
 draw_rect:
  mov $0x00, %ax
@@ -154,6 +177,7 @@ done:
 
 xaxis: .word 0
 yaxis: .byte 0
+fy: .float 0.0
 width: .word 5
 height: .byte 5
 color: .byte 0
@@ -161,6 +185,9 @@ buffer_addr: .word 0x1000
 timel: .word 0
 timeh: .word 0
 tm: .int 0
+angle: .int 0
+fangle: .float 0.0
+speed: .int 1
 
 .org 510
 .word 0xAA55
