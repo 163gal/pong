@@ -75,28 +75,27 @@ move_ball:
  fildl angle # %st0
  fldpi # %st1=PI
  fmulp # %st0*=%st1, delete %st1
- flds angle_180 # %st1
- fdivp # %st0/=%st1, delete %st1
+ fdiv angle_180 # %st0/=180
  fsts fangle # Store float %st0
 
- jmp continue_mb_
- angle_180: .float 180.0 # Little workaround
- continue_mb_:
-
- fsin # %st0=sin
- fmuls speed # %st0*=speed
- fildl yaxis # Load Y to %st1
- faddp # %st0 += %st1, delete %st1
- fistpl yaxis # Store int %st0, delete %st0
-
- fldl fangle # Load angle %st0
  fcos # %st0=cos
  fmuls speed # %st0*=speed
- fildl xaxis # Load X to %st1
+ flds fx # Load X to %st1
  faddp # %st0 += %st1, delete %st1
+ fsts fx # Save float %st0
  fistpl xaxis # Store int %st0, delete %st0
 
+ flds fangle # Load angle %st0
+ fsin # %st0=sin
+ fmuls speed # %st0*=speed
+ flds fy # Load Y to %st1
+ faddp # %st0 += %st1, delete %st1
+ fsts fy # Save float %st0
+ fistpl yaxis # Store int %st0, delete %st0
+
  ret
+
+angle_180: .float 180.0
 
 draw_rect:
  mov $0x00, %ax
@@ -185,6 +184,7 @@ xaxis: .word 0 # X
 yaxis: .byte 0 # Y
 .byte 0 # Fake
 .word 0 # Fake
+fx: .float 0.0
 fy: .float 0.0
 width: .word 5
 height: .byte 5
@@ -194,7 +194,7 @@ timel: .word 0
 timeh: .word 0
 tm: .int 0
 
-angle: .word 90
+angle: .word 10
 _angle: .word 0
 
 fangle: .float 0.0
