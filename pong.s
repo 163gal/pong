@@ -32,8 +32,6 @@ _start:
  movw %cx, timeh
  movw %dx, timel
 
- fild xaxis # Load X to %st0
- fild yaxis # Load Y to %st1
  call move_ball
 
 loop:
@@ -74,23 +72,30 @@ loop:
  jmp .
 
 move_ball:
- fild angle # %st2
- fldpi # %st3=PI
- fmulp # %st2*=%st3, delete %st3
- fild 180 # %st3
- fdivp # %st2/=%st3, delete %st3
- fst fangle # Store float %st2
- fsin # %st2=sin
- fmul speed # %st2*=speed
- faddp # %st1 += %st2, delete %st2
- fst fy # Store float %st1
- fistp yaxis # Store int %st1, delete %st1
- fld fangle # Load angle %st1
- fcos # %st1=cos
- fmul speed # %st1*=speed
+ fildl angle # %st0
+ fldpi # %st1=PI
+ fmulp # %st0*=%st1, delete %st1
+ flds angle_180 # %st1
+ fdivp # %st0/=%st1, delete %st1
+ fsts fangle # Store float %st0
+
+ jmp continue_mb_
+ angle_180: .float 180.0 # Little workaround
+ continue_mb_:
+
+ fsin # %st0=sin
+ fmuls speed # %st0*=speed
+ fildl yaxis # Load Y to %st1
  faddp # %st0 += %st1, delete %st1
- fist xaxis # Store int %st0
- fld fy # Load Y in %st1
+ fistpl yaxis # Store int %st0, delete %st0
+
+ fldl fangle # Load angle %st0
+ fcos # %st0=cos
+ fmuls speed # %st0*=speed
+ fildl xaxis # Load X to %st1
+ faddp # %st0 += %st1, delete %st1
+ fistpl xaxis # Store int %st0, delete %st0
+
  ret
 
 draw_rect:
@@ -175,8 +180,11 @@ flip_screen:
 done:
  ret
 
-xaxis: .word 0
-yaxis: .byte 0
+xaxis: .word 0 # X
+.word 0 # Fake
+yaxis: .byte 0 # Y
+.byte 0 # Fake
+.word 0 # Fake
 fy: .float 0.0
 width: .word 5
 height: .byte 5
@@ -185,9 +193,12 @@ buffer_addr: .word 0x1000
 timel: .word 0
 timeh: .word 0
 tm: .int 0
-angle: .int 0
+
+angle: .word 90
+_angle: .word 0
+
 fangle: .float 0.0
-speed: .int 1
+speed: .float 1.0
 
 .org 510
 .word 0xAA55
