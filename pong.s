@@ -36,27 +36,22 @@ _start:
 
 loop:
  call clear
+ call collision
  call move_ball
- mov $0x01, %al
- mov %al, color
- mov $10, %ax
- mov %ax, width
- mov $8, %al
- mov %al, height
  call draw_rect
  call flip_screen
  
  wpar:
-	 wcomp:
-	   mov $0x00, %ah
-	   int $0x1A
-	   cmp %dx, timel
-	   je wcomp
-	 movw %dx, timel
-	 mov $3, %bl
-	 cmp %bl, timel
-	 jne wpar
-	 mov $0x01, %ah
+  wcomp:
+   mov $0x00, %ah
+   int $0x1A
+   cmp %dx, timel
+   je wcomp
+  movw %dx, timel
+  mov $3, %bl
+  cmp %bl, timel
+  jne wpar
+ mov $0x01, %ah
  mov $0x00, %cx
  mov $0x00, %dx
  int $0x1A
@@ -96,6 +91,38 @@ move_ball:
  ret
 
 angle_180: .float 180.0
+
+update_float:
+ fildl xaxis
+ fstps fx
+ fildl yaxis
+ fstps fy
+ ret
+
+collision:
+ movb yaxis, %al # Y collision
+ cmp $0, %al
+ je collide_y
+ cmp $192, %al
+ je collide_y
+ movw xaxis, %ax # X collision
+ cmp $0, %ax
+ je collide_x
+ cmp $310, %ax
+ je collide_x
+ ret
+
+collide_y:
+ movb $100, yaxis
+ call update_float
+ ret
+
+collide_x:
+ mov angle, %bx
+ mov $180, %dx
+ sub %bx, %dx
+ movw %dx, angle
+ ret
 
 draw_rect:
  mov $0x00, %ax
@@ -186,15 +213,15 @@ yaxis: .byte 0 # Y
 .word 0 # Fake
 fx: .float 0.0
 fy: .float 0.0
-width: .word 5
-height: .byte 5
-color: .byte 0
+width: .word 10
+height: .byte 8
+color: .byte 1
 buffer_addr: .word 0x1000
 timel: .word 0
 timeh: .word 0
 tm: .int 0
 
-angle: .word 10
+angle: .word 45
 _angle: .word 0
 
 fangle: .float 0.0
